@@ -101,6 +101,14 @@ export class TasksService {
     return task;
   }
 
+  async updateStatus(
+    id: string,
+    status: TaskStatus,
+    userId: string,
+  ): Promise<Task> {
+    return this.update(id, { status }, userId);
+  }
+
   async remove(id: string, userId: string): Promise<void> {
     const res = await this.taskModel
       .findOneAndDelete({ _id: id, createdBy: userId })

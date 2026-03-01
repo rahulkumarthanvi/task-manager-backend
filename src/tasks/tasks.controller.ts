@@ -13,6 +13,7 @@ import {
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('tasks')
@@ -51,6 +52,23 @@ export class TasksController {
   @Get(':id')
   findOne(@Param('id') id: string, @Req() req: any) {
     return this.tasksService.findOne(id, req.user.userId);
+  }
+
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskStatusDto,
+    @Req() req: any,
+  ) {
+    const task = await this.tasksService.updateStatus(
+      id,
+      dto.status,
+      req.user.userId,
+    );
+    return {
+      message: `Task marked as ${dto.status}`,
+      data: task,
+    };
   }
 
   @Patch(':id')
