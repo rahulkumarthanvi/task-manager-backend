@@ -29,9 +29,12 @@ export class AuthController {
     const user = await this.usersService.create(dto);
 
     return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
+      message: 'User registered successfully',
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
     };
   }
 
@@ -53,7 +56,10 @@ export class AuthController {
     });
 
     return {
-      user: result.user,
+      message: 'Logged in successfully',
+      data: {
+        user: result.user,
+      },
     };
   }
 
@@ -61,7 +67,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token');
-    return { success: true };
+    return {
+      message: 'Logged out successfully',
+      data: null,
+    };
   }
 
   @Get('me')

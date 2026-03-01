@@ -4,12 +4,14 @@ import { Model, Types } from 'mongoose';
 import { Task, TaskStatus } from './schemas/task.schema';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { ProjectsService } from '../projects/projects.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectModel(Task.name)
     private readonly taskModel: Model<Task>,
+    private readonly projectsService: ProjectsService,
   ) {}
 
   private async generateTaskId(projectName: string): Promise<string> {
@@ -32,11 +34,13 @@ export class TasksService {
   }
 
   async create(dto: CreateTaskDto, userId: string): Promise<Task> {
-    const taskId = await this.generateTaskId(dto.projectName);
+    const project = await this.projectsService.ensureProject(dto.projectName, userId);
+    const taskId = await this.generateTaskId(project.name);
     const now = new Date();
 
     const created = new this.taskModel({
       ...dto,
+      projectName: project.name,
       taskId,
       createdBy: new Types.ObjectId(userId),
       assignedDate: now,
@@ -130,4 +134,3 @@ export class TasksService {
     };
   }
 }
-

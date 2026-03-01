@@ -21,8 +21,12 @@ export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
-  create(@Body() dto: CreateTaskDto, @Req() req: any) {
-    return this.tasksService.create(dto, req.user.userId);
+  async create(@Body() dto: CreateTaskDto, @Req() req: any) {
+    const task = await this.tasksService.create(dto, req.user.userId);
+    return {
+      message: 'Task created successfully',
+      data: task,
+    };
   }
 
   @Get()
@@ -50,13 +54,24 @@ export class TasksController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTaskDto, @Req() req: any) {
-    return this.tasksService.update(id, dto, req.user.userId);
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateTaskDto,
+    @Req() req: any,
+  ) {
+    const task = await this.tasksService.update(id, dto, req.user.userId);
+    return {
+      message: 'Task updated successfully',
+      data: task,
+    };
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req: any) {
-    return this.tasksService.remove(id, req.user.userId);
+  async remove(@Param('id') id: string, @Req() req: any) {
+    await this.tasksService.remove(id, req.user.userId);
+    return {
+      message: 'Task deleted successfully',
+      data: null,
+    };
   }
 }
-
